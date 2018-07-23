@@ -388,14 +388,14 @@ __fastcall TForm1::TForm1(TComponent* Owner)
 void __fastcall TForm1::Timer_ballTimer(TObject *Sender)
 {
 
-   ball->Left += vertical;
-   ball->Top += horizontal;
+   ball->Left += horizontal;
+   ball->Top += vertical;
 
    //reflection from top
-   if(ball->Top - 5 <= field->Top) horizontal = -horizontal;
+   if(ball->Top - 5 <= field->Top) vertical = -vertical;
 
    //reflection from bottom
-   if(ball->Top + ball->Height >= field->Height) horizontal = -horizontal;
+   if(ball->Top + ball->Height >= field->Height) vertical = -vertical;
 
    //goal left paddle
    if(ball->Left >= right_paddle->Left + right_paddle->Width)
@@ -453,12 +453,12 @@ void __fastcall TForm1::Timer_ballTimer(TObject *Sender)
    else if(ball->Left <= left_paddle->Left + left_paddle->Width && ball->Top > left_paddle->Top - ball->Height/2
    && ball->Top < left_paddle->Top + left_paddle->Height)
    {
-       if(vertical < 0) vertical = -vertical;
+       if(vertical < 0) horizontal = -horizontal;
    }
    else if(ball->Left + ball->Width >= right_paddle->Left && ball->Top > right_paddle->Top - ball->Height/2
    && ball->Top < right_paddle->Top + right_paddle->Height)
    {
-       if(vertical > 0) vertical = -vertical;
+       if(vertical > 0) horizontal = -horizontal;
    }
 }
 //---------------------------------------------------------------------------
@@ -528,10 +528,10 @@ void __fastcall TForm1::next_roundClick(TObject *Sender)
         vertical = vertical;
         horizontal = horizontal;
         } else {
-        vertical = -vertical;
-        horizontal = horizontal;
+        vertical = vertical;
+        horizontal = -horizontal;
         }
-        vertical = vertical * 1.2;
+        horizontal = horizontal * 1.2;
 
         next_round->Visible = false;
         new_game->Visible = false;

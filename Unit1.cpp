@@ -17,6 +17,50 @@ int left_goal = 0;
 int right_goal = 0;
 bool game_start = false;
 
+void set_start_score_board() {
+
+        Form1->new_game->Visible = false;
+        Form1->new_game->Caption = "New game";
+        Form1->next_round->Visible = false;
+        Form1->left_score->Visible = true;
+        Form1->right_score->Visible = true;
+        Form1->left_team_name->Visible = true;
+        Form1->right_team_name->Visible = true;
+}
+
+void set_start_parameters() {
+
+        Form1->left_paddle->Enabled = true;
+        Form1->right_paddle->Enabled = true;
+        Form1->left_winner->Visible = false;
+        Form1->right_winner->Visible = false;
+        Form1->goal->Visible = false;
+}
+
+void start_counting() {
+
+        Form1->show_message->Visible = true;
+        Form1->show_message->Caption = "Match start in: 3";
+        Application->ProcessMessages(); Sleep(1000);
+        Form1->show_message->Caption = "Match start in: 2";
+        Application->ProcessMessages(); Sleep(1000);
+        Form1->show_message->Caption = "Match start in: 1";
+        Application->ProcessMessages(); Sleep(1000);
+        Form1->show_message->Visible = false;
+        sndPlaySound("snd/once_whistle.wav", SND_ASYNC);
+        Application->ProcessMessages(); Sleep(1000);
+}
+
+void start_ball() {
+
+        Form1->Timer_ball->Enabled = true;
+        Form1->ball->Left = 776;
+        Form1->ball->Top = 376;
+        Form1->ball->Visible = true;
+        vertical = -6;
+        horizontal = -8;
+}
+
 void start() {
 
 
@@ -345,37 +389,10 @@ void start() {
                 break;
                 }}}}
 
-        Form1->new_game->Visible = false;
-        Form1->new_game->Caption = "New game";
-        Form1->next_round->Visible = false;
-        Form1->left_score->Visible = true;
-        Form1->right_score->Visible = true;
-        Form1->left_team_name->Visible = true;
-        Form1->right_team_name->Visible = true;
-
-        Form1->left_paddle->Enabled = true;
-        Form1->right_paddle->Enabled = true;
-        Form1->left_winner->Visible = false;
-        Form1->right_winner->Visible = false;
-        Form1->goal->Visible = false;
-
-        Form1->show_message->Visible = true;
-        Form1->show_message->Caption = "Match start in: 3";
-        Application->ProcessMessages(); Sleep(1000);
-        Form1->show_message->Caption = "Match start in: 2";
-        Application->ProcessMessages(); Sleep(1000);
-        Form1->show_message->Caption = "Match start in: 1";
-        Application->ProcessMessages(); Sleep(1000);
-        Form1->show_message->Visible = false;
-        sndPlaySound("snd/once_whistle.wav", SND_ASYNC);
-        Application->ProcessMessages(); Sleep(1000);
-
-        Form1->Timer_ball->Enabled = true;
-        Form1->ball->Left = 776;
-        Form1->ball->Top = 376;
-        Form1->ball->Visible = true;
-        vertical = -6;
-        horizontal = -8;
+        set_start_score_board();
+        set_start_parameters();
+        start_counting();
+        start_ball();
 }
 
 //---------------------------------------------------------------------------
@@ -388,14 +405,14 @@ __fastcall TForm1::TForm1(TComponent* Owner)
 void __fastcall TForm1::Timer_ballTimer(TObject *Sender)
 {
 
-   ball->Left += horizontal;
-   ball->Top += vertical;
+   ball->Left += vertical;
+   ball->Top += horizontal;
 
    //reflection from top
-   if(ball->Top - 5 <= field->Top) vertical = -vertical;
+   if(ball->Top - 5 <= field->Top) horizontal = -horizontal;
 
    //reflection from bottom
-   if(ball->Top + ball->Height >= field->Height) vertical = -vertical;
+   if(ball->Top + ball->Height >= field->Height) horizontal = -horizontal;
 
    //goal left paddle
    if(ball->Left >= right_paddle->Left + right_paddle->Width)
@@ -453,12 +470,12 @@ void __fastcall TForm1::Timer_ballTimer(TObject *Sender)
    else if(ball->Left <= left_paddle->Left + left_paddle->Width && ball->Top > left_paddle->Top - ball->Height/2
    && ball->Top < left_paddle->Top + left_paddle->Height)
    {
-       if(vertical < 0) horizontal = -horizontal;
+       if(vertical < 0) vertical = -vertical;
    }
    else if(ball->Left + ball->Width >= right_paddle->Left && ball->Top > right_paddle->Top - ball->Height/2
    && ball->Top < right_paddle->Top + right_paddle->Height)
    {
-       if(vertical > 0) horizontal = -horizontal;
+       if(vertical > 0) vertical = -vertical;
    }
 }
 //---------------------------------------------------------------------------
@@ -528,10 +545,10 @@ void __fastcall TForm1::next_roundClick(TObject *Sender)
         vertical = vertical;
         horizontal = horizontal;
         } else {
-        vertical = vertical;
-        horizontal = -horizontal;
+        vertical = -vertical;
+        horizontal = horizontal;
         }
-        horizontal = horizontal * 1.2;
+        vertical = vertical * 1.2;
 
         next_round->Visible = false;
         new_game->Visible = false;
